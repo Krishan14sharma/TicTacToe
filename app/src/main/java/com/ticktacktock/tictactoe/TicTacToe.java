@@ -66,8 +66,15 @@ public class TicTacToe {
     }
 
     private boolean hasWon(int x, int y, BoardPlayer playerToMove) {
-        boolean hasWon = checkRow(x, playerToMove.move) || checkColumn(y, playerToMove.move);
-        return hasWon;
+        return checkRow(x, playerToMove.move)
+                || checkColumn(y, playerToMove.move)
+                || checkDiagonals(x, y, playerToMove.move);
+    }
+
+    private boolean checkDiagonals(int x, int y, int move) {
+        return (x == y || (x + y == 2))
+                && ((board[0][0] == move && board[1][1] == move && board[2][2] == move)
+                || (board[0][2] == move && board[1][1] == move && board[2][0] == move));
     }
 
     private boolean checkColumn(int y, int movetoCheck) {

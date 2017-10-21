@@ -74,6 +74,17 @@ public class TicTacToeTest {
     }
 
     @Test
+    public void testPlayerWinsByADiagonalMove() {
+        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        ticTacToe.moveAt(0, 0); // player 1 moves
+        ticTacToe.moveAt(0, 1); // player 2 moves
+        ticTacToe.moveAt(1, 1);// player 1 moves
+        ticTacToe.moveAt(0, 2);// player 2 moves
+        ticTacToe.moveAt(2, 2);//player 1 moves
+        verify(ticTacToeListener).gameWonBy(playerToMove);
+    }
+
+    @Test
     public void testListenerCalledWhenPlayerAWins() {
         TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         ticTacToe.moveAt(0, 0); // player 1 moves
@@ -82,7 +93,6 @@ public class TicTacToeTest {
         ticTacToe.moveAt(1, 2);// player 2 moves
         ticTacToe.moveAt(0, 1);//player 1 moves
         verify(ticTacToeListener).gameWonBy(playerToMove);
-        testBoardIsEmptyInitiallyAndAllMovesAreValid(); // test game is reset
     }
 
     @Test
@@ -95,7 +105,6 @@ public class TicTacToeTest {
         ticTacToe.moveAt(1, 2);// player 1 moves
         ticTacToe.moveAt(0, 1);//player 2 moves
         verify(ticTacToeListener).gameWonBy(playerToMove);
-        testBoardIsEmptyInitiallyAndAllMovesAreValid(); // test game is reset
     }
 
 
@@ -122,7 +131,6 @@ public class TicTacToeTest {
         TicTacToeTestHelper.makeAGameTie(ticTacToe);
         verify(ticTacToeListener).gameEndsWithATie();
         verify(ticTacToeListener, never()).gameWonBy((TicTacToe.BoardPlayer) any());
-        testBoardIsEmptyInitiallyAndAllMovesAreValid(); // test game is reset
     }
 
     @Test
@@ -130,7 +138,6 @@ public class TicTacToeTest {
         ticTacToe.moveAt(0, 0);
         ticTacToe.moveAt(0, 2);
         ticTacToe.resetGame();
-        testBoardIsEmptyInitiallyAndAllMovesAreValid();
     }
 
 }
