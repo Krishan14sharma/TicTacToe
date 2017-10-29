@@ -2,6 +2,7 @@ package com.ticktacktock.tictactoe;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 
@@ -29,14 +30,14 @@ public class TicTacToe {
 
     private BoardPlayer playerToMove = BoardPlayer.PLAYER_X; // stores whose turn it is
 
-    private TicTacToeListener ticTacToeListener;
+    @Nullable private TicTacToeListener ticTacToeListener;
     private int numberOfMoves = 0;
 
-    public TicTacToe(TicTacToeListener ticTacToeListener) {
-        if (ticTacToeListener == null) {
-            throw new IllegalArgumentException("Listener can not be null");
-        }
+    public TicTacToe() {
         initGame();
+    }
+
+    public void setTicTacToeListener(TicTacToeListener ticTacToeListener) {
         this.ticTacToeListener = ticTacToeListener;
     }
 
@@ -52,13 +53,15 @@ public class TicTacToe {
             return false;
         }
         numberOfMoves++;
-        ticTacToeListener.movedAt(x, y, playerToMove.move);
+        if (ticTacToeListener != null) {
+            ticTacToeListener.movedAt(x, y, playerToMove.move);
+        }
         board[x][y] = playerToMove.move;
         boolean hasWon = hasWon(x, y, playerToMove);
-        if (hasWon) {
+        if (hasWon && ticTacToeListener != null) {
             ticTacToeListener.gameWonBy(playerToMove);
         }
-        else if (numberOfMoves == BOARD_COLUMN * BOARD_ROW) {
+        else if (numberOfMoves == BOARD_COLUMN * BOARD_ROW && ticTacToeListener != null) {
             ticTacToeListener.gameEndsWithATie();
         }
         changeTurnToNextPlayer();
@@ -141,7 +144,7 @@ public class TicTacToe {
 
     public enum BoardPlayer {
         PLAYER_X(BoardState.MOVE_X), PLAYER_O(BoardState.MOVE_O);
-        int move = SPACE;
+        public int move = SPACE;
 
         BoardPlayer(int move) {
             this.move = move;
