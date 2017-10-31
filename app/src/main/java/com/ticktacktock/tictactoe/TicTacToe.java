@@ -3,6 +3,7 @@ package com.ticktacktock.tictactoe;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import java.lang.annotation.Retention;
 
@@ -14,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 /**
  * Created by krishan on 19/10/17.
  * <p>
- * TicTacToe coordinates for each square
+ * TicTacToe coordinates for each square #SquareCoordinates
  * -----------------
  * (0,0) (0,1) (0,2)
  * (1,0) (1,1) (1,2)
@@ -58,9 +59,9 @@ public class TicTacToe {
             ticTacToeListener.movedAt(x, y, playerToMove.move);
         }
         board[x][y] = playerToMove.move;
-        boolean hasWon = hasWon(x, y, playerToMove);
-        if (hasWon && ticTacToeListener != null) {
-            ticTacToeListener.gameWonBy(playerToMove);
+        Pair<Boolean, SquareCoordinates[]> won = hasWon(x, y, playerToMove);
+        if (won.first && ticTacToeListener != null) {
+            ticTacToeListener.gameWonBy(playerToMove, won.second);
         }
         else if (numberOfMoves == BOARD_COLUMN * BOARD_ROW && ticTacToeListener != null) {
             ticTacToeListener.gameEndsWithATie();
@@ -69,32 +70,50 @@ public class TicTacToe {
         return true;
     }
 
-    private boolean hasWon(int x, int y, BoardPlayer playerToMove) {
-        return checkRow(x, playerToMove.move)
-                || checkColumn(y, playerToMove.move)
-                || checkDiagonals(x, y, playerToMove.move);
+    private Pair<Boolean, SquareCoordinates[]> hasWon(int x, int y, BoardPlayer playerToMove) {
+        SquareCoordinates[] winCoordinates = new SquareCoordinates[3];
+        boolean hasWon = checkRow(x, y, playerToMove.move, winCoordinates)
+                || checkColumn(x, y, playerToMove.move, winCoordinates)
+                || checkDiagonals(x, y, playerToMove.move, winCoordinates);
+        return Pair.create(hasWon, winCoordinates);
     }
 
-    private boolean checkDiagonals(int x, int y, int move) {
-        return (x == y || (x + y == 2))
-                && ((board[0][0] == move && board[1][1] == move && board[2][2] == move)
-                || (board[0][2] == move && board[1][1] == move && board[2][0] == move));
+    private boolean checkDiagonals(int x, int y, int move, SquareCoordinates[] winCoordinates) {
+        if ((board[0][0] == move && board[1][1] == move && board[2][2] == move)) {
+            winCoordinates[0] = new SquareCoordinates(0, 0);
+            winCoordinates[1] = new SquareCoordinates(1, 1);
+            winCoordinates[2] = new SquareCoordinates(2, 2);
+            return true;
+        }
+        else if ((board[0][2] == move && board[1][1] == move && board[2][0] == move)) {
+            winCoordinates[0] = new SquareCoordinates(0, 2);
+            winCoordinates[1] = new SquareCoordinates(1, 1);
+            winCoordinates[2] = new SquareCoordinates(2, 0);
+            return true;
+        }
+        return false;
     }
 
-    private boolean checkColumn(int y, int movetoCheck) {
+    private boolean checkColumn(int x, int y, int movetoCheck, SquareCoordinates[] winCoordinates) {
         for (int i = 0; i < BOARD_ROW; i++) {
             if (board[i][y] != movetoCheck) {
                 return false;
             }
         }
+        for (int i = 0; i < winCoordinates.length; i++) {
+            winCoordinates[i] = new SquareCoordinates(i, y);
+        }
         return true;
     }
 
-    private boolean checkRow(int x, int movetoCheck) {
+    private boolean checkRow(int x, int y, int movetoCheck, SquareCoordinates[] winCoordinates) {
         for (int i = 0; i < BOARD_ROW; i++) {
             if (board[x][i] != movetoCheck) {
                 return false;
             }
+        }
+        for (int i = 0; i < winCoordinates.length; i++) {
+            winCoordinates[i] = new SquareCoordinates(x, i);
         }
         return true;
     }
@@ -120,11 +139,6 @@ public class TicTacToe {
 
     public void resetGame() {
         initGame();
-    }
-
-    // todo return immutable instance
-    public int[][] getBoard() {
-        return board;
     }
 
     @BoardState
@@ -158,11 +172,24 @@ public class TicTacToe {
     }
 
     public interface TicTacToeListener {
-        void gameWonBy(BoardPlayer boardPlayer);
+        void gameWonBy(BoardPlayer boardPlayer, SquareCoordinates winPoints[]);
 
         void gameEndsWithATie();
 
         void movedAt(int x, int y, int move);
     }
+
+    // todo use this for passing coordinates
+    public static final class SquareCoordinates {
+        public final int i; // holds the row index of a Square on Board
+        public final int j; // holds the column index of a Square on Board
+
+        public SquareCoordinates(int i, int j) {
+            this.i = i;
+            this.j = j;
+        }
+
+    }
+
 
 }

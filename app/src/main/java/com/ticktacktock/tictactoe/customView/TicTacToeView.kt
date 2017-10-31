@@ -3,6 +3,7 @@ package com.ticktacktock.tictactoe.customView
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
@@ -10,6 +11,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.ticktacktock.tictactoe.R
+import com.ticktacktock.tictactoe.TicTacToe.SquareCoordinates
 
 /**
  * Created by krishan on 29/10/17.
@@ -23,7 +25,7 @@ class TicTacToeView : View {
     private val paint = Paint()
     private val textPaint = Paint()
     private val highLightPaint = Paint()
-
+    private var path = Path()
     private lateinit var squares: Array<Array<Rect>>
     private lateinit var squareData: Array<Array<String>>
     var squarePressListener: SquarePressedListener? = null
@@ -31,12 +33,14 @@ class TicTacToeView : View {
     val moveX = "X"
     val moveY = "O"
 
-
     val COUNT = 3
     val X_PARTITION_RATIO = 1 / 3f
     val Y_PARTITION_RATIO = 1 / 3f
     var pair = Pair(0, 0)
     var touching: Boolean = false
+    var winCoordinates: Array<SquareCoordinates> = Array(3, { SquareCoordinates(-1, -1) })
+    var shouldAnimate = false
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
@@ -81,6 +85,9 @@ class TicTacToeView : View {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) {
+            return false
+        }
         val x = event.x
         val y = event.y
         when (event.action) {
@@ -123,9 +130,25 @@ class TicTacToeView : View {
         drawHorizontalLines(canvas)
         drawVerticalLines(canvas)
         drawSquareStates(canvas)
+        if (shouldAnimate) {
+            animateWin(canvas)
+        }
         if (touching) {
             drawHighlightRectangle(canvas)
         }
+    }
+
+    private fun animateWin(canvas: Canvas) {
+        // todo improve this
+        if (winCoordinates[0].i < 0) return
+        val x1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterX()
+        val y1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterY()
+        val x2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterX()
+        val y2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterY()
+        path.moveTo(x1, y1)
+        path.lineTo(x2, y2)
+        canvas.drawPath(path, paint)
+        shouldAnimate = false
     }
 
     private fun drawSquareStates(canvas: Canvas) {
@@ -177,8 +200,17 @@ class TicTacToeView : View {
 
     fun reset() {
         squareData = Array(3, { Array(3, { "" }) })
+        winCoordinates = Array(3, { SquareCoordinates(-1, -1) })
+        path = Path()
         invalidate()
     }
 
+    fun animateWin(winCoords: Array<SquareCoordinates>) {
+        winCoords.forEachIndexed { index, coords ->
+            winCoordinates[index] = coords
+        }
+        shouldAnimate = true
+        invalidate()
+    }
 
 }
