@@ -19,6 +19,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
  * Created by krishan on 25/10/17.
  */
 @RunWith (AndroidJUnit4.class)
+
 public class TicTacToeFunctionalTest {
 
     private ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class, true, false);

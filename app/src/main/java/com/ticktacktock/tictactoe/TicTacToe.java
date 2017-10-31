@@ -30,7 +30,8 @@ public class TicTacToe {
 
     private BoardPlayer playerToMove = BoardPlayer.PLAYER_X; // stores whose turn it is
 
-    @Nullable private TicTacToeListener ticTacToeListener;
+    @Nullable
+    private TicTacToeListener ticTacToeListener;
     private int numberOfMoves = 0;
 
     public TicTacToe() {
@@ -119,6 +120,11 @@ public class TicTacToe {
 
     public void resetGame() {
         initGame();
+    }
+
+    // todo return immutable instance
+    public int[][] getBoard() {
+        return board;
     }
 
     @BoardState

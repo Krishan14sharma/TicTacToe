@@ -112,6 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
+        android:fontFamily="@font/nunito"
         android:text="TicTacToe"
         android:textColor="@color/colorPrimary"
         android:textSize="18sp"
