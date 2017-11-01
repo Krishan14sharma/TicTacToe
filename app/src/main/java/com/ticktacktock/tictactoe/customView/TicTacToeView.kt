@@ -1,10 +1,8 @@
 package com.ticktacktock.tictactoe.customView
 
+import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.Rect
+import android.graphics.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
@@ -13,10 +11,11 @@ import android.view.View
 import com.ticktacktock.tictactoe.R
 import com.ticktacktock.tictactoe.TicTacToe.SquareCoordinates
 
+
 /**
  * Created by krishan on 29/10/17.
  */
-class TicTacToeView : View {
+class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
 
     constructor(ctx: Context) : super(ctx)
 
@@ -25,7 +24,7 @@ class TicTacToeView : View {
     private val paint = Paint()
     private val textPaint = Paint()
     private val highLightPaint = Paint()
-    private var path = Path()
+    private val path = Path()
     private lateinit var squares: Array<Array<Rect>>
     private lateinit var squareData: Array<Array<String>>
     var squarePressListener: SquarePressedListener? = null
@@ -131,24 +130,30 @@ class TicTacToeView : View {
         drawVerticalLines(canvas)
         drawSquareStates(canvas)
         if (shouldAnimate) {
-            animateWin(canvas)
+            canvas.drawPath(path, paint)
         }
         if (touching) {
             drawHighlightRectangle(canvas)
         }
     }
 
-    private fun animateWin(canvas: Canvas) {
-        // todo improve this
-        if (winCoordinates[0].i < 0) return
-        val x1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterX()
-        val y1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterY()
-        val x2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterX()
-        val y2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterY()
-        path.moveTo(x1, y1)
-        path.lineTo(x2, y2)
-        canvas.drawPath(path, paint)
-        shouldAnimate = false
+    private fun animateWin() {
+        val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+        valueAnimator.duration = 400
+        valueAnimator.addUpdateListener(this)
+        valueAnimator.start()
+    }
+
+    override fun onAnimationUpdate(animation: ValueAnimator) {
+        val measure = PathMeasure(path, false)
+        val phase = measure.length - (measure.length * (animation.animatedValue as Float))
+        paint.pathEffect = createPathEffect(measure.length, phase, 0.0f)
+        invalidate()
+    }
+
+    private fun createPathEffect(pathLength: Float, phase: Float, offset: Float): PathEffect {
+        return DashPathEffect(floatArrayOf(pathLength, pathLength),
+                phase)
     }
 
     private fun drawSquareStates(canvas: Canvas) {
@@ -201,7 +206,8 @@ class TicTacToeView : View {
     fun reset() {
         squareData = Array(3, { Array(3, { "" }) })
         winCoordinates = Array(3, { SquareCoordinates(-1, -1) })
-        path = Path()
+        path.reset()
+        shouldAnimate = false
         invalidate()
     }
 
@@ -209,8 +215,16 @@ class TicTacToeView : View {
         winCoords.forEachIndexed { index, coords ->
             winCoordinates[index] = coords
         }
+        if (winCoordinates[0].i < 0) return
+        val x1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterX()
+        val y1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterY()
+        val x2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterX()
+        val y2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterY()
+        path.reset()
+        path.moveTo(x1, y1)
+        path.lineTo(x2, y2)
         shouldAnimate = true
-        invalidate()
+        animateWin()
     }
 
 }
