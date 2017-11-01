@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
+
+    <TextView
+        android:id="@+id/information"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="56dp"
+        android:fontFamily="@font/nunito"
+        android:textColor="@color/colorAccent"
+        android:textSize="24sp"/>
 
     <com.ticktacktock.tictactoe.customView.TicTacToeView
         android:id="@+id/ticTacToeView"
@@ -15,12 +26,16 @@
 
     <Button
         android:id="@+id/resetButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="48dp"
+        android:fontFamily="@font/nunito"
         android:text="Reset"
-        android:visibility="visible"
-        />
+        android:textColor="@color/colorAccent"
+        android:textSize="18dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </FrameLayout>

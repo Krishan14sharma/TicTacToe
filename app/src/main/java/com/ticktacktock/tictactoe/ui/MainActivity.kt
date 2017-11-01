@@ -3,7 +3,6 @@ package com.ticktacktock.tictactoe.ui
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.Toast
 import com.ticktacktock.tictactoe.R
 import com.ticktacktock.tictactoe.TicTacToe
 import com.ticktacktock.tictactoe.customView.TicTacToeView
@@ -39,7 +38,8 @@ class MainActivity : AppCompatActivity(), TicTacToe.TicTacToeListener, TicTacToe
     }
 
     override fun gameEndsWithATie() {
-        Toast.makeText(this, "Game Ends with a tie", Toast.LENGTH_SHORT).show()
+        information.visibility = View.VISIBLE
+        information.text = getString(R.string.game_ends_draw)
         resetButton.visibility = View.VISIBLE
         ticTacToeView.isEnabled = false
     }
@@ -47,15 +47,16 @@ class MainActivity : AppCompatActivity(), TicTacToe.TicTacToeListener, TicTacToe
     private fun resetGameUi() {
         ticTacToeView.reset()
         ticTacToeView.isEnabled = true
+        information.visibility = View.GONE
+        resetButton.visibility = View.GONE
     }
 
     override fun gameWonBy(boardPlayer: TicTacToe.BoardPlayer, winCoords: Array<TicTacToe.SquareCoordinates>) {
-        Toast.makeText(this, "Game won by" + boardPlayer.move, Toast.LENGTH_SHORT).show()
+        information.visibility = View.VISIBLE
+        information.text = "Game won by ${if (boardPlayer.move == TicTacToe.BoardState.MOVE_X) "X" else "O"}"
         ticTacToeView.animateWin(winCoords)
         ticTacToeView.isEnabled = false
         resetButton.visibility = View.VISIBLE
-//        ticTacToe.resetGame()
-//        resetGameUi()
     }
 
 }

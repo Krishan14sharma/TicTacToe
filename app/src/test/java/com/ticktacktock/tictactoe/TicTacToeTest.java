@@ -1,5 +1,7 @@
 package com.ticktacktock.tictactoe;
 
+import com.ticktacktock.tictactoe.TicTacToe.BoardPlayer;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,7 +25,8 @@ public class TicTacToeTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ticTacToe = new TicTacToe(ticTacToeListener);
+        ticTacToe = new TicTacToe();
+        ticTacToe.setTicTacToeListener(ticTacToeListener);
     }
 
     @Test
@@ -48,7 +51,7 @@ public class TicTacToeTest {
 
     @Test
     public void testPlayerMovesAreRecordedCorrectlyOnBoard() {
-        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         assertThat(ticTacToe.getMoveAt(0, 0)).isEqualTo(TicTacToe.BoardState.SPACE);
         ticTacToe.moveAt(0, 0);
         assertThat(ticTacToe.getMoveAt(0, 0)).isEqualTo(playerToMove.move);
@@ -60,7 +63,7 @@ public class TicTacToeTest {
 
     @Test
     public void testPlayerTurnChangeAfterAMove() {
-        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         assertThat(ticTacToe.moveAt(0, 0)).isTrue();
         assertThat(ticTacToe.getPlayerToMove()).isNotEqualTo(playerToMove);
     }
@@ -68,55 +71,68 @@ public class TicTacToeTest {
     @Test
     public void testNotValidMoveByPlayer_PlayerRemainsSame() {
         assertThat(ticTacToe.moveAt(0, 0)).isTrue();
-        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         assertThat(ticTacToe.moveAt(0, 0)).isFalse();
         assertThat(ticTacToe.getPlayerToMove()).isEqualTo(playerToMove);
     }
 
     @Test
     public void testPlayerWinsByADiagonalMove() {
-        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         ticTacToe.moveAt(0, 0); // player 1 moves
         ticTacToe.moveAt(0, 1); // player 2 moves
         ticTacToe.moveAt(1, 1);// player 1 moves
         ticTacToe.moveAt(0, 2);// player 2 moves
         ticTacToe.moveAt(2, 2);//player 1 moves
-        verify(ticTacToeListener).gameWonBy(playerToMove);
+        verify(ticTacToeListener).gameWonBy(playerToMove, new TicTacToe.SquareCoordinates[] {
+                new TicTacToe.SquareCoordinates(0, 0),
+                new TicTacToe.SquareCoordinates(1, 1),
+                new TicTacToe.SquareCoordinates(2, 2),
+        });
     }
 
     @Test
     public void testListenerCalledWhenPlayerAWins() {
-        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         ticTacToe.moveAt(0, 0); // player 1 moves
         ticTacToe.moveAt(1, 1); // player 2 moves
         ticTacToe.moveAt(0, 2);// player 1 moves
         ticTacToe.moveAt(1, 2);// player 2 moves
         ticTacToe.moveAt(0, 1);//player 1 moves
-        verify(ticTacToeListener).gameWonBy(playerToMove);
+        verify(ticTacToeListener).gameWonBy(playerToMove, new TicTacToe.SquareCoordinates[] {
+                new TicTacToe.SquareCoordinates(0, 0),
+                new TicTacToe.SquareCoordinates(0, 1),
+                new TicTacToe.SquareCoordinates(0, 2),
+        });
     }
 
     @Test
     public void testListenerCalledWhenPlayerBWins() {
         ticTacToe.moveAt(2, 2); // player 1 moves
-        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         ticTacToe.moveAt(0, 0); // player 2 moves
         ticTacToe.moveAt(1, 1); // player 1 moves
         ticTacToe.moveAt(0, 2);// player 2 moves
         ticTacToe.moveAt(1, 2);// player 1 moves
         ticTacToe.moveAt(0, 1);//player 2 moves
-        verify(ticTacToeListener).gameWonBy(playerToMove);
+        // todo fix this need to be in order
+        verify(ticTacToeListener).gameWonBy(playerToMove, new TicTacToe.SquareCoordinates[] {
+                new TicTacToe.SquareCoordinates(0, 0),
+                new TicTacToe.SquareCoordinates(0, 1),
+                new TicTacToe.SquareCoordinates(0, 2),
+        });
     }
 
 
     @Test
     public void testNoListenerCalledThereIsNoWin() {
-        TicTacToe.BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
+        BoardPlayer playerToMove = ticTacToe.getPlayerToMove();
         ticTacToe.moveAt(0, 0); // player 1 moves
         ticTacToe.moveAt(1, 1); // player 2 moves
         ticTacToe.moveAt(0, 2);// player 1 moves
         ticTacToe.moveAt(1, 2);// player 2 moves
         ticTacToe.moveAt(2, 1);//player 1 moves
-        verify(ticTacToeListener, never()).gameWonBy(playerToMove);
+        verify(ticTacToeListener, never()).gameWonBy(any(BoardPlayer.class), any(TicTacToe.SquareCoordinates[].class));
         verify(ticTacToeListener, never()).gameEndsWithATie();
     }
 
@@ -130,7 +146,7 @@ public class TicTacToeTest {
     public void testListenerCalledThereIsATie() {
         TicTacToeTestHelper.makeAGameTie(ticTacToe);
         verify(ticTacToeListener).gameEndsWithATie();
-        verify(ticTacToeListener, never()).gameWonBy((TicTacToe.BoardPlayer) any());
+        verify(ticTacToeListener, never()).gameWonBy((BoardPlayer) any(), any(TicTacToe.SquareCoordinates[].class));
     }
 
     @Test

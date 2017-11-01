@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TicTacToe</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="game_ends_draw">Game ends in a draw</string>
 </resources>

@@ -3,7 +3,7 @@ package com.ticktacktock.tictactoe;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
-import android.util.Pair;
+import android.support.v4.util.Pair;
 
 import java.lang.annotation.Retention;
 
@@ -189,6 +189,29 @@ public class TicTacToe {
             this.j = j;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            SquareCoordinates that = (SquareCoordinates) o;
+
+            if (i != that.i) {
+                return false;
+            }
+            return j == that.j;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = i;
+            result = 31 * result + j;
+            return result;
+        }
     }
 
 
