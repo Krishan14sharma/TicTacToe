@@ -101,12 +101,14 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
             MotionEvent.ACTION_UP -> {
                 touching = false
                 invalidate(squares[pair.first][pair.second])
-                squarePressListener?.onSquarePressed(pair.first, pair.second)
+                val (finalX1, finalY1) = getTouchInRectangle(x, y)
+                if ((finalX1 == pair.first) && (finalY1 == pair.second)) { // if initial touch and final touch is in same rectangle or not
+                    squarePressListener?.onSquarePressed(pair.first, pair.second)
+                }
 
             }
             MotionEvent.ACTION_CANCEL -> {
                 touching = false
-                return false
             }
 
         }
