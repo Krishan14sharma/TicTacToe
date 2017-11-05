@@ -42,7 +42,9 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
 
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val size = Math.min(measuredHeight, measuredWidth)
+        setMeasuredDimension(size, size)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -128,8 +130,8 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawHorizontalLines(canvas)
         drawVerticalLines(canvas)
+        drawHorizontalLines(canvas)
         drawSquareStates(canvas)
         if (shouldAnimate) {
             canvas.drawPath(path, paint)
@@ -141,7 +143,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
 
     private fun animateWin() {
         val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
-        valueAnimator.duration = 400
+        valueAnimator.duration = 600
         valueAnimator.addUpdateListener(this)
         valueAnimator.start()
     }
@@ -181,12 +183,12 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
         canvas.drawText(str, textX, textY, textPaint)
     }
 
-    private fun drawHorizontalLines(canvas: Canvas) {
+    private fun drawVerticalLines(canvas: Canvas) {
         canvas.drawLine(width * X_PARTITION_RATIO, 0f, width * X_PARTITION_RATIO, height.toFloat(), paint)
         canvas.drawLine(width * (2 * X_PARTITION_RATIO), 0f, width * (2 * X_PARTITION_RATIO), height.toFloat(), paint)
     }
 
-    private fun drawVerticalLines(canvas: Canvas) {
+    private fun drawHorizontalLines(canvas: Canvas) {
         canvas.drawLine(0f, height * Y_PARTITION_RATIO, width.toFloat(), height * Y_PARTITION_RATIO, paint)
         canvas.drawLine(0f, height * (2 * Y_PARTITION_RATIO), width.toFloat(), height * (2 * Y_PARTITION_RATIO), paint)
     }
