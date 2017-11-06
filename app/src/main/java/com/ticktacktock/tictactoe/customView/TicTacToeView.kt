@@ -178,8 +178,8 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     private fun drawTextInsideRectangle(canvas: Canvas, rect: Rect, str: String) {
         val xOffset = textPaint.measureText(str) * 0.5f
         val yOffset = textPaint.fontMetrics.ascent * -0.4f
-        val textX = ((rect.right + rect.left) / 2f) - xOffset
-        val textY = ((rect.bottom + rect.top) / 2f) + yOffset
+        val textX = (rect.exactCenterX()) - xOffset
+        val textY = (rect.exactCenterY()) + yOffset
         canvas.drawText(str, textX, textY, textPaint)
     }
 
