@@ -1,3 +1,3 @@
 # TicTacToe
 
-![TicTacToe](../TicTacToe/project.gif)
+![TicTacToe](project.gif)
