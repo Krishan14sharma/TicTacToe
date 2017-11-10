@@ -35,7 +35,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     val COUNT = 3
     val X_PARTITION_RATIO = 1 / 3f
     val Y_PARTITION_RATIO = 1 / 3f
-    var pair = Pair(0, 0)
+    var rectIndex = Pair(0, 0)
     var touching: Boolean = false
     var winCoordinates: Array<SquareCoordinates> = Array(3, { SquareCoordinates(-1, -1) })
     var shouldAnimate = false
@@ -93,19 +93,19 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
         val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                pair = getTouchInRectangle(x, y)
+                rectIndex = getRectIndexesFor(x, y)
                 touching = true
-                invalidate(squares[pair.first][pair.second])
+                invalidate(squares[rectIndex.first][rectIndex.second])
             }
             MotionEvent.ACTION_MOVE -> {
 
             }
             MotionEvent.ACTION_UP -> {
                 touching = false
-                invalidate(squares[pair.first][pair.second])
-                val (finalX1, finalY1) = getTouchInRectangle(x, y)
-                if ((finalX1 == pair.first) && (finalY1 == pair.second)) { // if initial touch and final touch is in same rectangle or not
-                    squarePressListener?.onSquarePressed(pair.first, pair.second)
+                invalidate(squares[rectIndex.first][rectIndex.second])
+                val (finalX1, finalY1) = getRectIndexesFor(x, y)
+                if ((finalX1 == rectIndex.first) && (finalY1 == rectIndex.second)) { // if initial touch and final touch is in same rectangle or not
+                    squarePressListener?.onSquarePressed(rectIndex.first, rectIndex.second)
                 }
 
             }
@@ -117,7 +117,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
         return true
     }
 
-    fun getTouchInRectangle(x: Float, y: Float): Pair<Int, Int> {
+    fun getRectIndexesFor(x: Float, y: Float): Pair<Int, Int> {
         squares.forEachIndexed {
             i, rects ->
             for ((j, rect) in rects.withIndex()) {
@@ -125,7 +125,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
                     return Pair(i, j)
             }
         }
-        return Pair(-1, -1)
+        return Pair(-1, -1) // x, y do not lie in our view
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -172,7 +172,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     }
 
     private fun drawHighlightRectangle(canvas: Canvas) {
-        canvas.drawRect(squares[pair.first][pair.second], highLightPaint)
+        canvas.drawRect(squares[rectIndex.first][rectIndex.second], highLightPaint)
     }
 
     private fun drawTextInsideRectangle(canvas: Canvas, rect: Rect, str: String) {
