@@ -161,14 +161,13 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     }
 
     private fun drawSquareStates(canvas: Canvas) {
-        squareData.forEachIndexed({ index_i, strings ->
-            strings.forEachIndexed({
-                index_j, string ->
-                if (string.isNotEmpty()) {
-                    drawTextInsideRectangle(canvas, squares[index_i][index_j], string)
+        for ((i, textArray) in squareData.withIndex()) {
+            for ((j, text) in textArray.withIndex()) {
+                if (text.isNotEmpty()) {
+                    drawTextInsideRectangle(canvas, squares[i][j], text)
                 }
-            })
-        })
+            }
+        }
     }
 
     private fun drawHighlightRectangle(canvas: Canvas) {
