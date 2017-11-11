@@ -198,12 +198,12 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
 
     fun drawXAtPosition(x: Int, y: Int) {
         squareData[x][y] = moveX
-        invalidate()
+        invalidate(squares[x][y])
     }
 
     fun drawOAtPosition(x: Int, y: Int) {
         squareData[x][y] = moveY
-        invalidate()
+        invalidate(squares[x][y])
     }
 
     fun reset() {
