@@ -25,8 +25,8 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class TicTacToe {
 
-    public static final int BOARD_ROW = 3;
-    public static final int BOARD_COLUMN = 3;
+    static final int BOARD_ROW = 3;
+    static final int BOARD_COLUMN = 3;
     private int board[][];
 
     private BoardPlayer playerToMove = BoardPlayer.PLAYER_X; // stores whose turn it is
@@ -39,7 +39,7 @@ public class TicTacToe {
         initGame();
     }
 
-    public void setTicTacToeListener(TicTacToeListener ticTacToeListener) {
+    public void setTicTacToeListener(@Nullable TicTacToeListener ticTacToeListener) {
         this.ticTacToeListener = ticTacToeListener;
     }
 

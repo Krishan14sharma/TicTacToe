@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.ticktacktock.tictactoe.R
-import com.ticktacktock.tictactoe.TicTacToe.SquareCoordinates
 
 
 /**
@@ -37,7 +36,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     val Y_PARTITION_RATIO = 1 / 3f
     var rectIndex = Pair(0, 0)
     var touching: Boolean = false
-    var winCoordinates: Array<SquareCoordinates> = Array(3, { SquareCoordinates(-1, -1) })
+    var winCoordinates: Array<Int> = Array(4, { -1 })
     var shouldAnimate = false
 
 
@@ -208,24 +207,23 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
 
     fun reset() {
         squareData = Array(3, { Array(3, { "" }) })
-        winCoordinates = Array(3, { SquareCoordinates(-1, -1) })
+        winCoordinates = Array(4, { -1 })
         path.reset()
         shouldAnimate = false
         invalidate()
     }
 
-    fun animateWin(winCoords: Array<SquareCoordinates>) {
-        winCoords.forEachIndexed { index, coords ->
-            winCoordinates[index] = coords
-        }
-        if (winCoordinates[0].i < 0) return
-        val x1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterX()
-        val y1 = squares[winCoordinates[0].i][winCoordinates[0].j].exactCenterY()
-        val x2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterX()
-        val y2 = squares[winCoordinates[2].i][winCoordinates[2].j].exactCenterY()
+    fun animateWin(x1: Int, y1: Int, x3: Int, y3: Int) {
+        winCoordinates = arrayOf(x1, y1, x3, y3)
+        if (winCoordinates[0] < 0) return
+        val centerX = squares[winCoordinates[0]][winCoordinates[1]].exactCenterX()
+        val centerY = squares[winCoordinates[0]][winCoordinates[1]].exactCenterY()
+        val centerX2 = squares[winCoordinates[2]][winCoordinates[3]].exactCenterX()
+        val centerY2 = squares[winCoordinates[2]][winCoordinates[3]].exactCenterY()
+
         path.reset()
-        path.moveTo(x1, y1)
-        path.lineTo(x2, y2)
+        path.moveTo(centerX, centerY)
+        path.lineTo(centerX2, centerY2)
         shouldAnimate = true
         animateWin()
     }

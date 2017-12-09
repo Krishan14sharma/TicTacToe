@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(), TicTacToe.TicTacToeListener, TicTacToe
     override fun gameWonBy(boardPlayer: TicTacToe.BoardPlayer, winCoords: Array<TicTacToe.SquareCoordinates>) {
         information.visibility = View.VISIBLE
         information.text = "Winner is ${if (boardPlayer.move == TicTacToe.BoardState.MOVE_X) "X" else "O"}"
-        ticTacToeView.animateWin(winCoords)
+        ticTacToeView.animateWin(winCoords[0].i, winCoords[0].j, winCoords[2].i, winCoords[2].j)
         ticTacToeView.isEnabled = false
         resetButton.visibility = View.VISIBLE
     }
