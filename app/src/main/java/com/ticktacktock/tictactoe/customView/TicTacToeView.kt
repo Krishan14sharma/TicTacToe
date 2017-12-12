@@ -141,7 +141,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     }
 
     private fun animateWin() {
-        val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+        val valueAnimator = ValueAnimator.ofFloat(1f, 0f)
         valueAnimator.duration = 600
         valueAnimator.addUpdateListener(this)
         valueAnimator.start()
@@ -149,12 +149,12 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
 
     override fun onAnimationUpdate(animation: ValueAnimator) {
         val measure = PathMeasure(path, false)
-        val phase = measure.length - (measure.length * (animation.animatedValue as Float))
-        paint.pathEffect = createPathEffect(measure.length, phase, 0.0f)
+        val phase = (measure.length * (animation.animatedValue as Float))
+        paint.pathEffect = createPathEffect(measure.length, phase)
         invalidate()
     }
 
-    private fun createPathEffect(pathLength: Float, phase: Float, offset: Float): PathEffect {
+    private fun createPathEffect(pathLength: Float, phase: Float): PathEffect {
         return DashPathEffect(floatArrayOf(pathLength, pathLength),
                 phase)
     }
