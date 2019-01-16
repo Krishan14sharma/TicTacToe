@@ -21,6 +21,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
 
     private val paint = Paint()
+    private val animatePaint = Paint()
     private val textPaint = Paint()
     private val highLightPaint = Paint()
     private val path = Path()
@@ -57,6 +58,11 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = resources.displayMetrics.density * 5
 
+        animatePaint.color = paint.color
+        animatePaint.isAntiAlias = paint.isAntiAlias
+        animatePaint.style = paint.style
+        animatePaint.strokeWidth = paint.strokeWidth
+
         textPaint.color = paint.color
         textPaint.isAntiAlias = true
         textPaint.typeface = ResourcesCompat.getFont(context, R.font.nunito)
@@ -69,14 +75,14 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     }
 
     private fun initializeTicTacToeSquares() {
-        squares = Array(3, { Array(3, { Rect() }) })
-        squareData = Array(3, { Array(3, { "" }) })
+        squares = Array(3) { Array(3) { Rect() } }
+        squareData = Array(3) { Array(3) { "" } }
 
         val xUnit = (width * X_PARTITION_RATIO).toInt() // one unit on x-axis
         val yUnit = (height * Y_PARTITION_RATIO).toInt() // one unit on y-axis
 
-        for (j in 0..COUNT - 1) {
-            for (i in 0..COUNT - 1) {
+        for (j in 0 until COUNT) {
+            for (i in 0 until COUNT) {
                 squares[i][j] = Rect(i * xUnit, j * yUnit, (i + 1) * xUnit, (j + 1) * yUnit)
             }
 
@@ -117,8 +123,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     }
 
     fun getRectIndexesFor(x: Float, y: Float): Pair<Int, Int> {
-        squares.forEachIndexed {
-            i, rects ->
+        squares.forEachIndexed { i, rects ->
             for ((j, rect) in rects.withIndex()) {
                 if (rect.contains(x.toInt(), y.toInt()))
                     return Pair(i, j)
@@ -133,7 +138,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
         drawHorizontalLines(canvas)
         drawSquareStates(canvas)
         if (shouldAnimate) {
-            canvas.drawPath(path, paint)
+            canvas.drawPath(path, animatePaint)
         }
         if (touching) {
             drawHighlightRectangle(canvas)
@@ -150,7 +155,7 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     override fun onAnimationUpdate(animation: ValueAnimator) {
         val measure = PathMeasure(path, false)
         val phase = (measure.length * (animation.animatedValue as Float))
-        paint.pathEffect = createPathEffect(measure.length, phase)
+        animatePaint.pathEffect = createPathEffect(measure.length, phase)
         invalidate()
     }
 
@@ -206,8 +211,8 @@ class TicTacToeView : View, ValueAnimator.AnimatorUpdateListener {
     }
 
     fun reset() {
-        squareData = Array(3, { Array(3, { "" }) })
-        winCoordinates = Array(4, { -1 })
+        squareData = Array(3) { Array(3) { "" } }
+        winCoordinates = Array(4) { -1 }
         path.reset()
         shouldAnimate = false
         invalidate()
